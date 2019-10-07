@@ -1,0 +1,34 @@
+version: "3"
+services:
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: always
+    network_mode: "host"
+    volumes:
+      - grafana-volume:/var/lib/grafana
+    depends_on:
+      - influxdb
+
+  influxdb:
+    image: influxdb
+    container_name: influxdb
+    restart: always
+    network_mode: "host"
+    volumes:
+      - influxdb-volume:/var/lib/influxdb
+
+ garduino_receiver:
+   build: ./garduino_receiver
+   container_name: garduino_receiver
+   restart: on-failure
+   privileged: true  # needed for bluetooth
+   network_mode: "host" # needed for bluetooth
+   depends_on:
+     - influxdb
+
+volumes:
+  grafana-volume:
+    external: true
+  influxdb-volume:
+    external: true

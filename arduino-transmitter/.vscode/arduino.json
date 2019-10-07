@@ -1,0 +1,6 @@
+{
+    "board": "arduino:avr:nano",
+    "configuration": "cpu=atmega328old",
+    "port": "COM3",
+    "sketch": "garduino-ble-transmitter\\garduino-ble-transmitter.ino"
+}
