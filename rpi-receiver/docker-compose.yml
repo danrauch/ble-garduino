@@ -1,7 +1,9 @@
+# inspired by https://towardsdatascience.com/get-system-metrics-for-5-min-with-docker-telegraf-influxdb-and-grafana-97cfd957f0ac
+
 version: "3"
 services:
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana:master
     container_name: grafana
     restart: always
     network_mode: "host"
@@ -11,21 +13,25 @@ services:
       - influxdb
 
   influxdb:
-    image: influxdb
+    image: influxdb:latest
     container_name: influxdb
     restart: always
     network_mode: "host"
     volumes:
       - influxdb-volume:/var/lib/influxdb
-
- garduino_receiver:
-   build: ./garduino_receiver
-   container_name: garduino_receiver
-   restart: on-failure
-   privileged: true  # needed for bluetooth
-   network_mode: "host" # needed for bluetooth
-   depends_on:
-     - influxdb
+  
+  garduino_receiver:
+    build: ./garduino_receiver
+    container_name: garduino_receiver
+    restart: always
+    # to use a bluetooth device from within a Docker container, unfortunately a 
+    # privileged user and the network mode 'host' is needed. See also here
+    # https://stackoverflow.com/questions/28868393/accessing-bluetooth-dongle-from-inside-docker
+    # and here https://github.com/moby/moby/issues/16208
+    privileged: true
+    network_mode: "host"
+    depends_on:
+      - influxdb
 
 volumes:
   grafana-volume:
